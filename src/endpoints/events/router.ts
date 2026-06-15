@@ -81,6 +81,7 @@ eventsRouter.put('/:id', requireAdmin, async (c) => {
       max_attendees = COALESCE(?, max_attendees),
       email = COALESCE(?, email), twitter = COALESCE(?, twitter),
       instagram = COALESCE(?, instagram), linkedin = COALESCE(?, linkedin),
+      form_config = COALESCE(?, form_config),
       updated_at = CURRENT_TIMESTAMP
      WHERE id = ?`
   ).bind(
@@ -96,6 +97,7 @@ eventsRouter.put('/:id', requireAdmin, async (c) => {
     body.max_attendees || null,
     body.email || null, body.twitter || null,
     body.instagram || null, body.linkedin || null,
+    body.form_config ? JSON.stringify(body.form_config) : null,
     id
   ).run();
 
