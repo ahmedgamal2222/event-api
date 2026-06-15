@@ -1,7 +1,7 @@
 // src/endpoints/auth/login.ts
 import { Hono } from 'hono';
 import { HonoEnv } from '../../types';
-import { hashPassword, createToken } from '../../utils/auth';
+import { hashPassword, verifyPassword, createToken } from '../../utils/auth';
 
 export const authRouter = new Hono<HonoEnv>();
 
@@ -20,8 +20,8 @@ authRouter.post('/login', async (c) => {
     return c.json({ success: false, error: 'Invalid credentials' }, 401);
   }
 
-  const passwordHash = await hashPassword(body.password);
-  if (admin.password_hash !== passwordHash) {
+  const isValid = await verifyPassword(body.password, admin.password_hash);
+  if (!isValid) {
     return c.json({ success: false, error: 'Invalid credentials' }, 401);
   }
 

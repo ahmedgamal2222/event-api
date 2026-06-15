@@ -2,9 +2,9 @@
 -- Default admin + demo event seed data
 
 -- Default super admin (password: admin123 – change immediately!)
--- bcrypt hash of "admin123" with 10 rounds
+-- SHA-256 hash of "admin123" (used by hashPassword in utils/auth.ts)
 INSERT OR IGNORE INTO admins (email, password_hash, name, role)
-VALUES ('admin@event.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LjTsyJB72.u', 'مدير النظام', 'super_admin');
+VALUES ('admin@event.com', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'مدير النظام', 'super_admin');
 
 -- Default demo event (Syria Startups Summit 2026)
 INSERT OR IGNORE INTO events (
