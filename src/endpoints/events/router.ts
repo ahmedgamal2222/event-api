@@ -82,6 +82,7 @@ eventsRouter.put('/:id', requireAdmin, async (c) => {
       email = COALESCE(?, email), twitter = COALESCE(?, twitter),
       instagram = COALESCE(?, instagram), linkedin = COALESCE(?, linkedin),
       form_config = COALESCE(?, form_config),
+      site_config = COALESCE(?, site_config),
       updated_at = CURRENT_TIMESTAMP
      WHERE id = ?`
   ).bind(
@@ -98,6 +99,7 @@ eventsRouter.put('/:id', requireAdmin, async (c) => {
     body.email || null, body.twitter || null,
     body.instagram || null, body.linkedin || null,
     body.form_config ? JSON.stringify(body.form_config) : null,
+    body.site_config ? JSON.stringify(body.site_config) : null,
     id
   ).run();
 
