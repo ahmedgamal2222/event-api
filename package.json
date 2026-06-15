@@ -1,0 +1,20 @@
+{
+  "name": "event-api",
+  "version": "1.0.0",
+  "description": "Event Management API – Hono + Cloudflare Workers + D1",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:migrate": "wrangler d1 migrations apply event-db"
+  },
+  "dependencies": {
+    "hono": "^4.12.8"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260301.0",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.74.0"
+  }
+}

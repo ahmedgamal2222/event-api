@@ -1,0 +1,28 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "event-api",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-03-17",
+	"vars": {
+		"JWT_SECRET": "event-super-secret-key-change-in-production"
+	},
+	"kv_namespaces": [
+		{
+			"binding": "SESSION_KV",
+			"id": "1625e7e3a76149b3b8c1f6d4862b7c7e"
+		}
+	],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "event-db",
+			"database_id": "38991c0f-8205-4645-a3dd-beee466e6266"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "BUCKET",
+			"bucket_name": "event-storage"
+		}
+	]
+}
