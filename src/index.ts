@@ -15,7 +15,18 @@ const app = new Hono<HonoEnv>();
 
 // ─── CORS ─────────────────────────────────────────────────────────────────────
 app.use('*', cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'https://event-web.pages.dev'],
+  origin: (origin) => {
+    const allowed = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://event-web.pages.dev',
+      'https://event-web-5ey.pages.dev',
+    ];
+    if (!origin || allowed.some(o => origin === o || origin.endsWith('.event-web-5ey.pages.dev'))) {
+      return origin ?? '*';
+    }
+    return null;
+  },
   allowHeaders: ['Content-Type', 'Authorization'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
