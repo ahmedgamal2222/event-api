@@ -56,8 +56,9 @@ registrationsRouter.post('/', async (c) => {
     `INSERT INTO registrations
       (event_id, reg_type, full_name, email, phone, city, country,
        company_name, sector, stage, team_size, website, description,
+       work_field, participation_reason,
        ticket_code, ip_address)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
   ).bind(
     eventId,
     body.reg_type,
@@ -72,6 +73,8 @@ registrationsRouter.post('/', async (c) => {
     body.team_size || null,
     body.website || null,
     body.description || null,
+    body.work_field || null,
+    body.participation_reason || null,
     ticketCode,
     ip
   ).run();
