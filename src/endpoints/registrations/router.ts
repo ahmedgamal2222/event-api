@@ -196,11 +196,38 @@ registrationsRouter.delete('/:id', requireAdmin, async (c) => {
   try {
     const id = Number(c.req.param('id'));
     const eventId = Number(c.req.param('eventId'));
-    const result = await c.env.DB.prepare('DELETE FROM registrations WHERE id = ? AND event_id = ?').bind(id, eventId).run();
+    
+    // Get registration details before deletion
+    const reg = await c.env.DB.prepare('SELECT id, status, reg_type FROM registrations WHERE id = ? AND event_id = ?')
+      .bind(id, eventId).first<any>();
+    
+    if (!reg) {
+      return c.json({ success: false, error: 'Registration not found' }, 404);
+    }
+    
+    // Delete the registration
+    const result = await c.env.DB.prepare('DELETE FROM registrations WHERE id = ? AND event_id = ?')
+      .bind(id, eventId).run();
     
     if (!result.meta.changes) {
       return c.json({ success: false, error: 'Registration not found' }, 404);
     }
+    
+    // Update stats: decrement total_registrations
+    let updateQuery = 'UPDATE event_stats SET total_registrations = CASE WHEN total_registrations > 0 THEN total_registrations - 1 ELSE 0 END';
+    
+    // Also decrement approved_count if it was approved
+    if (reg.status === 'approved') {
+      updateQuery += ', approved_count = CASE WHEN approved_count > 0 THEN approved_count - 1 ELSE 0 END';
+    }
+    
+    // Also decrement startup_count if it was a startup
+    if (reg.reg_type === 'startup') {
+      updateQuery += ', startup_count = CASE WHEN startup_count > 0 THEN startup_count - 1 ELSE 0 END';
+    }
+    
+    updateQuery += ', updated_at = CURRENT_TIMESTAMP WHERE event_id = ?';
+    await c.env.DB.prepare(updateQuery).bind(eventId).run();
     
     return c.json({ success: true });
   } catch (error: any) {
