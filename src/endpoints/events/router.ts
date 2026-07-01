@@ -108,6 +108,10 @@ eventsRouter.put('/:id', requireAdmin, async (c) => {
       return c.json({ success: false, error: 'Invalid JSON in form_config or site_config' }, 400);
     }
 
+    // Handle logo and cover_image - allow empty string to clear
+    const logo = body.logo === '' ? null : (body.logo || null);
+    const coverImage = body.cover_image === '' ? null : (body.cover_image || null);
+
     await c.env.DB.prepare(
       `UPDATE events SET
         name = COALESCE(?, name), name_ar = COALESCE(?, name_ar),
@@ -116,7 +120,7 @@ eventsRouter.put('/:id', requireAdmin, async (c) => {
         location = COALESCE(?, location), location_ar = COALESCE(?, location_ar),
         country = COALESCE(?, country), city = COALESCE(?, city),
         start_date = COALESCE(?, start_date), end_date = COALESCE(?, end_date),
-        cover_image = COALESCE(?, cover_image), logo = COALESCE(?, logo),
+        cover_image = ?, logo = ?,
         primary_color = COALESCE(?, primary_color), status = COALESCE(?, status),
         registration_open = COALESCE(?, registration_open),
         max_attendees = COALESCE(?, max_attendees),
@@ -133,7 +137,7 @@ eventsRouter.put('/:id', requireAdmin, async (c) => {
       body.location || null, body.location_ar || null,
       body.country || null, body.city || null,
       body.start_date || null, body.end_date || null,
-      body.cover_image || null, body.logo || null,
+      coverImage, logo,
       body.primary_color || null, body.status || null,
       body.registration_open ?? null,
       body.max_attendees || null,
