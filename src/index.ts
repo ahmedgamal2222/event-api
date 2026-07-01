@@ -12,6 +12,8 @@ import { statsRouter } from './endpoints/stats/router';
 import { sponsorsRouter } from './endpoints/sponsors/router';
 import { faqsRouter } from './endpoints/faqs/router';
 import { uploadsRouter } from './endpoints/uploads/router';
+import { ticketsRouter } from './endpoints/tickets/router';
+import { supportRouter } from './endpoints/support/router';
 
 const app = new Hono<HonoEnv>();
 
@@ -88,6 +90,8 @@ app.route('/api/events/:eventId/registrations', registrationsRouter);
 app.route('/api/events/:eventId/stats', statsRouter);
 app.route('/api/events/:eventId/sponsors', sponsorsRouter);
 app.route('/api/events/:eventId/faqs', faqsRouter);
+app.route('/api/events/:eventId/tickets', ticketsRouter);
+app.route('/api/events/:eventId/support', supportRouter);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Admin Overview
