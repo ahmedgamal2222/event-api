@@ -34,9 +34,32 @@ sponsorsRouter.put('/:id', requireAdmin, async (c) => {
   const body = await c.req.json().catch(() => null);
   if (!body) return c.json({ success: false, error: 'Body required' }, 400);
 
+  // Get existing sponsor to check for old logo_url
+  const existing: any = await c.env.DB.prepare(
+    `SELECT logo_url FROM sponsors WHERE id = ? AND event_id = ?`
+  ).bind(id, eventId).first();
+
+  if (!existing) return c.json({ success: false, error: 'Sponsor not found' }, 404);
+
+  // If logo is changed and old logo exists, delete it from R2
+  if (existing.logo_url && body.logo_url !== existing.logo_url) {
+    try {
+      const url = new URL(existing.logo_url);
+      const filename = url.pathname.split('/').pop();
+      if (filename) {
+        await c.env.BUCKET.delete(filename);
+      }
+    } catch (e: any) {
+      console.error('Failed to delete old logo from R2:', e);
+    }
+  }
+
+  // Allow empty/null logo_url to clear it
+  const logoUrl = body.logo_url === '' ? null : (body.logo_url || null);
+
   await c.env.DB.prepare(
-    'UPDATE sponsors SET name = COALESCE(?, name), logo_url = COALESCE(?, logo_url), website = COALESCE(?, website), tier = COALESCE(?, tier), sort_order = COALESCE(?, sort_order) WHERE id = ? AND event_id = ?'
-  ).bind(body.name || null, body.logo_url || null, body.website || null, body.tier || null, body.sort_order ?? null, id, eventId).run();
+    'UPDATE sponsors SET name = COALESCE(?, name), logo_url = ?, website = COALESCE(?, website), tier = COALESCE(?, tier), sort_order = COALESCE(?, sort_order) WHERE id = ? AND event_id = ?'
+  ).bind(body.name || null, logoUrl, body.website || null, body.tier || null, body.sort_order ?? null, id, eventId).run();
 
   return c.json({ success: true });
 });
