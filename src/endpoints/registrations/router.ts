@@ -112,7 +112,10 @@ registrationsRouter.get('/', requireAdmin, async (c) => {
     const limit = Math.min(Number(url.searchParams.get('limit') || 50), 200);
     const offset = Number(url.searchParams.get('offset') || 0);
 
-    let query = 'SELECT * FROM registrations WHERE event_id = ?';
+    let query = `SELECT id, event_id, reg_type as type, full_name as name, email, phone, city, country,
+                        company_name, sector, stage, team_size, website, description,
+                        work_field, participation_reason, status, ticket_code, notes, ip_address,
+                        created_at, updated_at FROM registrations WHERE event_id = ?`;
     const params: any[] = [eventId];
 
     if (status) { query += ' AND status = ?'; params.push(status); }
@@ -143,7 +146,11 @@ registrationsRouter.get('/:id', requireAdmin, async (c) => {
   try {
     const id = Number(c.req.param('id'));
     const eventId = Number(c.req.param('eventId'));
-    const reg = await c.env.DB.prepare('SELECT * FROM registrations WHERE id = ? AND event_id = ?').bind(id, eventId).first();
+    const reg = await c.env.DB.prepare(`SELECT id, event_id, reg_type as type, full_name as name, email, phone, city, country,
+                                                company_name, sector, stage, team_size, website, description,
+                                                work_field, participation_reason, status, ticket_code, notes, ip_address,
+                                                created_at, updated_at FROM registrations WHERE id = ? AND event_id = ?`)
+                                      .bind(id, eventId).first();
     if (!reg) return c.json({ success: false, error: 'Not found' }, 404);
     return c.json({ success: true, data: reg });
   } catch (error: any) {
